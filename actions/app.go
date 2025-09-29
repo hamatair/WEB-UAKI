@@ -66,6 +66,15 @@ func App() *buffalo.App {
 		// Remove to disable this.
 		app.Use(popmw.Transaction(models.DB))
 		app.GET("/", HomeHandler)
+		app.POST("/article/post", UploadMedia)
+		app.Resource("/admins", AdminsResource{})
+		app.Resource("/articles", ArticlesResource{})
+		app.Resource("/media", MediaResource{})
+		app.Resource("/roles", RolesResource{})
+		app.Resource("/statuses", StatusesResource{})
+		app.Resource("/article_categories", ArticleCategoriesResource{})
+		app.Resource("/media_categories", MediaCategoriesResource{})
+		app.Resource("/article_media", ArticleMediaResource{})
 	})
 
 	return app

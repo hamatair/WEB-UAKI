@@ -1,0 +1,21 @@
+package actions
+
+func (as *ActionSuite) Test_RolesResource_List() {
+	as.Fail("Not Implemented!")
+}
+
+func (as *ActionSuite) Test_RolesResource_Show() {
+	as.Fail("Not Implemented!")
+}
+
+func (as *ActionSuite) Test_RolesResource_Create() {
+	as.Fail("Not Implemented!")
+}
+
+func (as *ActionSuite) Test_RolesResource_Update() {
+	as.Fail("Not Implemented!")
+}
+
+func (as *ActionSuite) Test_RolesResource_Destroy() {
+	as.Fail("Not Implemented!")
+}
