@@ -6,14 +6,15 @@ import (
 
 	"github.com/gobuffalo/pop/v6"
 	"github.com/gobuffalo/validate/v3"
+	"github.com/gofrs/uuid"
 )
 
 // Admin is used by pop to map your admins database table to your go code.
 type Admin struct {
-	ID       int    `json:"id" db:"id"`
-	RoleID   int    `json:"role_id" db:"role_id"`
-	Email    string `json:"email" db:"email"`
-	Password string `json:"password" db:"password"`
+	ID       uuid.UUID `json:"id" db:"id"`
+	RoleID   int64     `json:"role_id" db:"role_id"`
+	Email    string    `json:"email" db:"email"`
+	Password string    `json:"password" db:"password"`
 
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`

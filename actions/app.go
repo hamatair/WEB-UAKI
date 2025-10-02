@@ -68,6 +68,7 @@ func App() *buffalo.App {
 		app.GET("/", HomeHandler)
 		app.POST("/article/post", UploadMedia)
 		app.Resource("/admins", AdminsResource{})
+		app.POST("/admin/login", Login)
 		app.Resource("/articles", ArticlesResource{})
 		app.Resource("/media", MediaResource{})
 		app.Resource("/roles", RolesResource{})

@@ -6,14 +6,13 @@ import (
 
 	"github.com/gobuffalo/pop/v6"
 	"github.com/gobuffalo/validate/v3"
-	"github.com/gofrs/uuid"
 )
 
 // Role is used by pop to map your roles database table to your go code.
 type Role struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name"`
-	
+	ID   int    `json:"id" db:"id"`
+	Name string `json:"name" db:"name"`
+
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }

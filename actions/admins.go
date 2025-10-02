@@ -2,11 +2,13 @@ package actions
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v6"
 	"github.com/gobuffalo/x/responder"
+	"golang.org/x/crypto/bcrypt"
 
 	"backend_server/models"
 )
@@ -99,6 +101,14 @@ func (v AdminsResource) Create(c buffalo.Context) error {
 	if err := c.Bind(admin); err != nil {
 		return err
 	}
+
+	//make hashPassword
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(admin.Password), 10)
+	if err != nil {
+		return err
+	}
+	log.Printf("Hashed password: %s", string(hashedPassword))
+	admin.Password = string(hashedPassword)
 
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
@@ -230,4 +240,43 @@ func (v AdminsResource) Destroy(c buffalo.Context) error {
 	}).Wants("xml", func(c buffalo.Context) error {
 		return c.Render(http.StatusOK, r.XML(admin))
 	}).Respond(c)
+}
+
+
+// LoginHandler handles login requests
+func Login(c buffalo.Context) error {
+	// Ambil input JSON
+	var input struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := c.Bind(&input); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	// Ambil DB connection
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return fmt.Errorf("no transaction found")
+	}
+
+	// Cari admin berdasarkan email
+	admin := &models.Admin{}
+	if err := tx.Where("email = ?", input.Email).First(admin); err != nil {
+		return c.Error(http.StatusUnauthorized, fmt.Errorf("invalid credentials"))
+	}
+
+	// Cek password
+	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(input.Password)); err != nil {
+		return c.Error(http.StatusUnauthorized, fmt.Errorf("invalid credentials"))
+	}
+
+	// TODO: generate token (JWT misalnya)
+	
+	// Untuk sementara, balikin data admin
+	return c.Render(200, r.JSON(map[string]interface{}{
+		"message": "login success",
+		"admin":   admin,
+		
+	}))
 }
