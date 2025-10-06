@@ -272,11 +272,16 @@ func Login(c buffalo.Context) error {
 	}
 
 	// TODO: generate token (JWT misalnya)
-	
+	token, err := JWTService.CreateJWTToken(admin.ID)
+	if err != nil {
+		log.Printf("Error generating token: %v", err)
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("could not generate token"))
+	}
+
 	// Untuk sementara, balikin data admin
 	return c.Render(200, r.JSON(map[string]interface{}{
 		"message": "login success",
 		"admin":   admin,
-		
+		"token":   token,
 	}))
 }

@@ -3,7 +3,9 @@ package actions
 import (
 	"sync"
 
+	"backend_server/jwt"
 	"backend_server/locales"
+	"backend_server/middlewares"
 	"backend_server/models"
 
 	"github.com/gobuffalo/buffalo"
@@ -21,6 +23,7 @@ import (
 // ENV is used to help switch settings based on where the
 // application is being run. Default is "development".
 var ENV = envy.Get("GO_ENV", "development")
+var JWTService jwt.Interface
 
 var (
 	app     *buffalo.App
@@ -52,6 +55,8 @@ func App() *buffalo.App {
 			SessionName: "_backend_server_session",
 		})
 
+		JWTService = jwt.Init()
+
 		// Automatically redirect to SSL
 		app.Use(forceSSL())
 
@@ -65,17 +70,55 @@ func App() *buffalo.App {
 		//   c.Value("tx").(*pop.Connection)
 		// Remove to disable this.
 		app.Use(popmw.Transaction(models.DB))
+
+		//middleware for translations
+		auth := middlewares.AuthMiddleware(JWTService)
+		superAdminAuth := middlewares.SuperAdminMiddleware
+
+		//routes
 		app.GET("/", HomeHandler)
 		app.POST("/article/post", UploadMedia)
-		app.Resource("/admins", AdminsResource{})
+
 		app.POST("/admin/login", Login)
-		app.Resource("/articles", ArticlesResource{})
-		app.Resource("/media", MediaResource{})
-		app.Resource("/roles", RolesResource{})
-		app.Resource("/statuses", StatusesResource{})
-		app.Resource("/article_categories", ArticleCategoriesResource{})
-		app.Resource("/media_categories", MediaCategoriesResource{})
-		app.Resource("/article_media", ArticleMediaResource{})
+
+		admins := AdminsResource{}
+		adminRoute := app.Resource("/admins", admins)
+		adminRoute.Middleware.Use(auth, superAdminAuth)
+
+		roles := RolesResource{}
+		rolesRoute := app.Resource("/roles", roles)
+		rolesRoute.Middleware.Use(superAdminAuth)
+		rolesRoute.Middleware.Use(auth)
+
+		articles := ArticlesResource{}
+		articleRoute := app.Resource("/articles", articles)
+		articleRoute.Middleware.Use(auth)
+
+		media := MediaResource{}
+		mediaRoute := app.Resource("/media", media)
+		mediaRoute.Middleware.Use(auth)
+
+		articleMedia := ArticleMediaResource{}
+		amRoute := app.Resource("/article_media", articleMedia)
+		amRoute.Middleware.Use(auth)
+
+		statuses := StatusesResource{}
+		statusesRoute := app.Resource("/statuses", statuses)
+		statusesRoute.Middleware.Use(auth)
+		statusesRoute.Middleware.Use(superAdminAuth)
+		statusesRoute.Middleware.Skip(superAdminAuth, statuses.List)
+
+		articleCategories := ArticleCategoriesResource{}
+		articleCategoriesRoute := app.Resource("/article_categories", articleCategories)
+		articleCategoriesRoute.Middleware.Use(auth)
+		articleCategoriesRoute.Middleware.Use(superAdminAuth)
+		articleCategoriesRoute.Middleware.Skip(superAdminAuth, articleCategories.List)
+
+		mediaCategories := MediaCategoriesResource{}
+		mediaCategoriesRoute := app.Resource("/media_categories", mediaCategories)
+		mediaCategoriesRoute.Middleware.Use(auth)
+		mediaCategoriesRoute.Middleware.Use(superAdminAuth)
+		mediaCategoriesRoute.Middleware.Skip(superAdminAuth, mediaCategories.List)
 	})
 
 	return app

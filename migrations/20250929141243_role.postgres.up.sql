@@ -6,3 +6,7 @@ CREATE TABLE roles (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO roles (name) VALUES
+('super_admin'),
+('admin');
