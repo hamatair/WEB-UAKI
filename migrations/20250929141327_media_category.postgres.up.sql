@@ -4,3 +4,12 @@ CREATE TABLE media_categories (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO media_categories (name) VALUES
+('Random'),
+('Ramadhan Brawijaya'),
+('UAKI School 1'),
+('Flourish'),
+('Sama Kahfi'),
+('Mentoring'),
+('Ngabarkuy');

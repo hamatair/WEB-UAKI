@@ -6,14 +6,13 @@ import (
 
 	"github.com/gobuffalo/pop/v6"
 	"github.com/gobuffalo/validate/v3"
-	"github.com/gofrs/uuid"
 )
 
 // MediaCategory is used by pop to map your media_categories database table to your go code.
 type MediaCategory struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name"`
-	
+	ID   int    `json:"id" db:"id"`
+	Name string `json:"name" db:"name"`
+
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }

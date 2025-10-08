@@ -77,13 +77,15 @@ func App() *buffalo.App {
 
 		//routes
 		app.GET("/", HomeHandler)
-		app.POST("/article/post", UploadMedia)
 
 		app.POST("/admin/login", Login)
 
 		admins := AdminsResource{}
 		adminRoute := app.Resource("/admins", admins)
 		adminRoute.Middleware.Use(auth, superAdminAuth)
+		
+		adminRoute.Middleware.Skip(superAdminAuth, admins.Create)
+		adminRoute.Middleware.Skip(auth, admins.Create)
 
 		roles := RolesResource{}
 		rolesRoute := app.Resource("/roles", roles)
@@ -93,14 +95,18 @@ func App() *buffalo.App {
 		articles := ArticlesResource{}
 		articleRoute := app.Resource("/articles", articles)
 		articleRoute.Middleware.Use(auth)
+		articleRoute.Middleware.Skip(auth, articles.List, articles.Show)
 
 		media := MediaResource{}
 		mediaRoute := app.Resource("/media", media)
 		mediaRoute.Middleware.Use(auth)
+		mediaRoute.Middleware.Skip(auth, media.List, media.Show)
+		app.POST("/media/image", auth(UploadImage))
 
 		articleMedia := ArticleMediaResource{}
 		amRoute := app.Resource("/article_media", articleMedia)
 		amRoute.Middleware.Use(auth)
+		amRoute.Middleware.Skip(auth, articleMedia.List, articleMedia.Show)
 
 		statuses := StatusesResource{}
 		statusesRoute := app.Resource("/statuses", statuses)

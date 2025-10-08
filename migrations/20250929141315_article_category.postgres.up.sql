@@ -4,3 +4,8 @@ CREATE TABLE article_categories (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO article_categories (name) VALUES
+('Islam'),
+('Umum'),
+('Informasi');
