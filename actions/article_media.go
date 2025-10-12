@@ -37,7 +37,7 @@ func (v ArticleMediaResource) List(c buffalo.Context) error {
 		return fmt.Errorf("no transaction found")
 	}
 
-	articleMedia := &models.ArticleMedia{}
+	articleMedia := &[]models.ArticleMedia{}
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".

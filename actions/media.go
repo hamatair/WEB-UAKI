@@ -235,7 +235,7 @@ func (v MediaResource) Destroy(c buffalo.Context) error {
 	}).Respond(c)
 }
 
-func UploadImage(c buffalo.Context) error {
+func (v MediaResource) UploadImage(c buffalo.Context) error {
 	file, err := c.File("image") // ambil dari form
 	if err != nil {
 		return c.Error(400, err)

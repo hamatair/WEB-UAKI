@@ -78,19 +78,22 @@ func App() *buffalo.App {
 		//routes
 		app.GET("/", HomeHandler)
 
-		app.POST("/admin/login", Login)
+		// app.POST("/admin/login", Login)
 
 		admins := AdminsResource{}
+		app.POST("/admins/login", admins.Login)
 		adminRoute := app.Resource("/admins", admins)
 		adminRoute.Middleware.Use(auth, superAdminAuth)
-		
-		adminRoute.Middleware.Skip(superAdminAuth, admins.Create)
-		adminRoute.Middleware.Skip(auth, admins.Create)
+		adminRoute.Middleware.Skip(auth, admins.Login)
+		adminRoute.Middleware.Skip(superAdminAuth, admins.Login)
+
+		// adminRoute.Middleware.Skip(superAdminAuth, admins.Create)
+		// adminRoute.Middleware.Skip(auth, admins.Create)
 
 		roles := RolesResource{}
 		rolesRoute := app.Resource("/roles", roles)
-		rolesRoute.Middleware.Use(superAdminAuth)
-		rolesRoute.Middleware.Use(auth)
+		rolesRoute.Middleware.Use(auth, superAdminAuth)
+		// rolesRoute.Middleware.Skip(superAdminAuth, roles.List)
 
 		articles := ArticlesResource{}
 		articleRoute := app.Resource("/articles", articles)
@@ -98,13 +101,13 @@ func App() *buffalo.App {
 		articleRoute.Middleware.Skip(auth, articles.List, articles.Show)
 
 		media := MediaResource{}
+		app.POST("/media/image", media.UploadImage)
 		mediaRoute := app.Resource("/media", media)
 		mediaRoute.Middleware.Use(auth)
 		mediaRoute.Middleware.Skip(auth, media.List, media.Show)
-		app.POST("/media/image", auth(UploadImage))
 
 		articleMedia := ArticleMediaResource{}
-		amRoute := app.Resource("/article_media", articleMedia)
+		amRoute := app.Resource("/article-media", articleMedia)
 		amRoute.Middleware.Use(auth)
 		amRoute.Middleware.Skip(auth, articleMedia.List, articleMedia.Show)
 
@@ -115,13 +118,13 @@ func App() *buffalo.App {
 		statusesRoute.Middleware.Skip(superAdminAuth, statuses.List)
 
 		articleCategories := ArticleCategoriesResource{}
-		articleCategoriesRoute := app.Resource("/article_categories", articleCategories)
+		articleCategoriesRoute := app.Resource("/article-categories", articleCategories)
 		articleCategoriesRoute.Middleware.Use(auth)
 		articleCategoriesRoute.Middleware.Use(superAdminAuth)
 		articleCategoriesRoute.Middleware.Skip(superAdminAuth, articleCategories.List)
 
 		mediaCategories := MediaCategoriesResource{}
-		mediaCategoriesRoute := app.Resource("/media_categories", mediaCategories)
+		mediaCategoriesRoute := app.Resource("/media-categories", mediaCategories)
 		mediaCategoriesRoute.Middleware.Use(auth)
 		mediaCategoriesRoute.Middleware.Use(superAdminAuth)
 		mediaCategoriesRoute.Middleware.Skip(superAdminAuth, mediaCategories.List)

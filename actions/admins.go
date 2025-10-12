@@ -244,7 +244,7 @@ func (v AdminsResource) Destroy(c buffalo.Context) error {
 
 
 // LoginHandler handles login requests
-func Login(c buffalo.Context) error {
+func (v AdminsResource) Login(c buffalo.Context) error {
 	// Ambil input JSON
 	var input struct {
 		Email    string `json:"email"`
